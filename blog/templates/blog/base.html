@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Blog{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+    <header>
+        <h1>🚀 Django Blog</h1>
+        <img src="{% static 'C:\Users\Sinan\ilkproje\static\img\logo.png.jpg' %}" alt="Logo">
+        <nav>
+            <a href="{% url 'tum_yazilar' %}">Ana Sayfa</a> |
+            <a href="/admin/">Admin Panel</a>
+        </nav>
+        <hr>
+    </header>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <hr>
+        <p>&copy; 2025 - Django Blog</p>
+    </footer>
+
+</body>
+</html>

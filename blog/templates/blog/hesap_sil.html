@@ -1,0 +1,11 @@
+{% extends 'blog/base.html' %}
+
+{% block content %}
+  <h2>Hesabını Sil</h2>
+  <p>Hesabınızı silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.</p>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit">Evet, Hesabımı Sil</button>
+  </form>
+  <p><a href="{% url 'ana_sayfa' %}">İptal</a></p>
+{% endblock %}

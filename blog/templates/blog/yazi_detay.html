@@ -1,0 +1,10 @@
+{% extends "blog/base.html" %}
+
+{% block title %}{{ yazi.baslik }}{% endblock %}
+
+{% block content %}
+    <h2>{{ yazi.baslik }}</h2>
+    <p><strong>Yazar:</strong> {{ yazi.yazar }}</p>
+    <p>{{ yazi.icerik }}</p>
+    <a href="{% url 'tum_yazilar' %}">← Geri Dön</a>
+{% endblock %}

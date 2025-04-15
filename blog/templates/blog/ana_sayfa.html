@@ -1,0 +1,29 @@
+{% extends "blog/base.html" %}
+
+{% block title %}Ana Sayfa{% endblock %}
+
+{% block content %}
+
+
+<h2>📢 Hoşgeldiniz!</h2>
+<p>Bu, basit bir Django blog uygulamasıdır.</p>
+
+<h3>📜 Son Blog Yazıları:</h3>
+<ul>
+    {% for yazi in yazilar|slice:":5" %}  <!-- Son 5 yazıyı göster -->
+        <li>
+            <strong>
+                <a href="{% url 'yazi_detay' yazi.id %}">{{ yazi.baslik }}</a>
+            </strong> - {{ yazi.yazar }} <br>
+            {{ yazi.icerik|truncatewords:15 }}  
+        </li>
+    {% empty %}
+        <p>Henüz yazı eklenmedi.</p>
+    {% endfor %}
+</ul>
+
+
+<a href="{% url 'tum_yazilar' %}">📂 Tüm Yazılar </a>
+
+{% endblock %}
+
