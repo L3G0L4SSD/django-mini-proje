@@ -6,6 +6,8 @@ from django.contrib.auth import authenticate, login, logout
 
 
 def home(request):
+  
+
   return render(request, 'ecommerce_app/index.html')
 
 
@@ -24,6 +26,7 @@ def signup(request):
     myuser.last_name = lname
 
     myuser.save()
+    myuser.is_staff = False
 
     messages.success(request, "Your Account has been successfully created.")
 
@@ -53,6 +56,13 @@ def signin(request):
 def signout(request):
   logout(request)
   messages.success(request, "Logged out Successfully!")
-  return redirect('home')
+  return redirect('ecommerce:home')
+
+def products(request):
+  return render(request, 'ecommerce_app/products.html')
+
+
+
+
 
 # Create your views here
