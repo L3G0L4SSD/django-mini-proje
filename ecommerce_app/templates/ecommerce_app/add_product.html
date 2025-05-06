@@ -1,0 +1,33 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]>      <html class="no-js"> <!--<![endif]-->
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Add Product</title>
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="" />
+  </head>
+  <body>
+    <h2>Add Product</h2>
+    <div>
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %} {{ form.as_p }} {% comment %} {% if form.errors %}
+        <ul>
+          {% for field in form %} {% for error in field.errors %}
+          <li><strong>{{ field.label }}</strong>: {{ error }}</li>
+          {% endfor %} {% endfor %}
+        </ul>
+        {% endif %} {% endcomment %}
+
+        <input type="submit" value="Add" />
+      </form>
+    </div>
+
+    <script src="" async defer></script>
+  </body>
+</html>

@@ -1,8 +1,10 @@
 from django.http import HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from ecommerce_app.models import Product
+from ecommerce_app.forms import ProductForm
 
 
 def home(request):
@@ -59,7 +61,27 @@ def signout(request):
   return redirect('ecommerce:home')
 
 def products(request):
-  return render(request, 'ecommerce_app/products.html')
+  result = Product.objects.all()
+
+  return render(request, 'ecommerce_app/products.html', {'result' : result})
+
+def add_product(request):
+
+  if request.method == 'POST':
+    form = ProductForm(request.POST, request.FILES)
+    if form.is_valid():
+      form.save()
+      return redirect('ecommerce:products')
+  else:
+    form = ProductForm()
+
+  return render(request, 'ecommerce_app/add_product.html', {'form': form})
+
+def details(request, product_id):
+  result = get_object_or_404(Product, id=product_id)
+
+  return render(request, 'ecommerce_app/details.html', {'result' : result})
+
 
 
 

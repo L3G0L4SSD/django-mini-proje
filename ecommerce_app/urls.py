@@ -11,4 +11,6 @@ urlpatterns = [
     path('signin', views.signin, name='signin'),
     path('signout', views.signout, name='signout'),
     path('products/', views.products, name='products'),
+    path('add_product/', views.add_product, name='add_product'),
+    path('details/<int:product_id>/', views.details, name='details'),
 ]
