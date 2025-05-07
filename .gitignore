@@ -1,0 +1,7 @@
+.idea/
+blog/
+django-mini-blog/
+venv/
+db.sqlite3
+manage.py
+ilkproje/
