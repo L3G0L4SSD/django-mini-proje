@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Ecommerce</title>
+    <meta name="description" content="Welcome to the Ecommerce Website" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container my-5">
+      <!-- Flash Messages -->
+      {% for message in messages %}
+      <div
+        class="alert alert-{{ message.tags }} alert-dismissible fade show"
+        role="alert"
+      >
+        <strong>Message:</strong> {{ message }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"
+        ></button>
+      </div>
+      {% endfor %}
+
+      <!-- Welcome Section -->
+      <div class="text-center mb-5">
+        <h1 class="display-4">Welcome to the Ecommerce Website</h1>
+      </div>
+
+      <!-- User Authentication Section -->
+      <div class="text-center">
+        {% if user.is_authenticated %}
+        <h3 class="mb-3">Hello, {{ fname }}!</h3>
+        <p class="text-success">You're successfully logged in!</p>
+        <a href="/signout" class="btn btn-danger mb-3">Sign Out</a>
+        <p>
+          <a href="{% url 'ecommerce:products' %}" class="btn btn-primary"
+            >Go to the store</a
+          >
+        </p>
+        {% else %}
+        <p class="mb-3">Please sign up or log in to explore our products.</p>
+        <a href="signup/" class="btn btn-success me-2">Sign Up</a>
+        <a href="signin/" class="btn btn-primary">Sign In</a>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
