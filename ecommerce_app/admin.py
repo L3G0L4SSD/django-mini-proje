@@ -1,5 +1,5 @@
 from django.contrib import admin
-from ecommerce_app.models import Product
+from ecommerce_app.models import *
 from django.utils.html import format_html
 
 
@@ -9,4 +9,8 @@ from django.utils.html import format_html
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
   list_display = ('name', 'price', 'description', 'stock', )
+
+admin.site.register(Order)
+admin.site.register(OrderItem)
+
     
