@@ -7,7 +7,7 @@ from ecommerce_app.models import Product
 from ecommerce_app.forms import ProductForm
 
 
-def home(request):
+def index(request):
   
 
   return render(request, 'ecommerce_app/index.html')
@@ -51,14 +51,14 @@ def signin(request):
 
     else:
       messages.error(request, "Bad Credentials!")
-      return redirect('home')
+      return redirect('ecommerce:index')
 
   return render(request, 'ecommerce_app/signin.html')
 
 def signout(request):
   logout(request)
   messages.success(request, "Logged out Successfully!")
-  return redirect('ecommerce:home')
+  return redirect('ecommerce:index')
 
 def products(request):
   result = Product.objects.all()
