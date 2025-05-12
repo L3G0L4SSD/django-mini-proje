@@ -85,9 +85,6 @@ DATABASES = {
         'PASSWORD': 'djangoproject',
         'HOST': 'database-1.cfmwyayew9nf.eu-north-1.rds.amazonaws.com',
         'PORT': '5432',
-        'OPTIONS': {
-            'sslmode': 'require',
-        },
     }
 }
 
