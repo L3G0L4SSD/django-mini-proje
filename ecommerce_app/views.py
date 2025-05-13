@@ -134,7 +134,7 @@ def checkout(request):
   return render(request, 'ecommerce_app/checkout.html', context)
 
 def updateItem(request):
-
+  
   data = json.loads(request.body.decode('utf-8'))
   productId = data['productId']
   action = data['action']
