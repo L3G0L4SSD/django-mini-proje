@@ -33,7 +33,7 @@ def signup(request):
 
     messages.success(request, "Your Account has been successfully created.")
 
-    return redirect('signin')
+    return redirect('ecommerce:signin')
 
   return render(request, 'ecommerce_app/signup.html')
 
@@ -159,6 +159,7 @@ def updateItem(request):
     orderItem.delete()
 
   return JsonResponse('Item was added', safe=False)
+
 
 
 
