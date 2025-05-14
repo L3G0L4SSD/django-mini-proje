@@ -5,21 +5,20 @@ var updateBtns = document.getElementsByClassName('update-cart')
 for (var i = 0; i < updateBtns.length; i++) {
 
   updateBtns[i].addEventListener('click', function(e) {
-    e.preventDefault() //added line
-    console.log('clicked')
+
     var productId = this.dataset.product
     var action = this.dataset.action
     console.log('productId:', productId, 'action:', action)
 
-    console.log('USER:', user)
+   
     if (user === 'AnonymousUser') {
-      console.log('User is not logged in')
+      addCookieItem(productId, action);
     } else {
-       updateUserOrder(productId, action)
+       updateUserOrder(productId, action);
       
     }
 
-  })
+  });
 }
 
 

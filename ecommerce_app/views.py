@@ -143,6 +143,7 @@ def updateItem(request):
   print('Action:', action)
   print('Product:', productId)
 
+ 
   user = request.user
   product = Product.objects.get(id=productId)
 
