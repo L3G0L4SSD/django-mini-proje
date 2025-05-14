@@ -52,9 +52,13 @@ const csrftoken = getToken('csrftoken');
           
         </ul>
         <div class="form-inline my-2 my-lg-0">
+          {% if user.is_authenticated %}
           <a href="{%url 'ecommerce:index' %}"class="btn btn-warning">Logout</a>
           <a href="{%url 'ecommerce:add_product' %}"class="btn btn-warning">Add Product</a>
-                  
+          {% else %}
+          <a href="{%url 'ecommerce:signin' %}"class="btn btn-warning">Login</a>
+          {% endif %}
+            
             <a href="{%url 'ecommerce:cart' %}">
               <img  id="cart-icon" src="{% static 'images/cart.png' %}">
              </a>

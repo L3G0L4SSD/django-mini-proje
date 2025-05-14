@@ -7,6 +7,7 @@ from ecommerce_app.models import *
 from ecommerce_app.forms import ProductForm
 from django.http import JsonResponse
 import json
+import datetime
 
 def index(request):
   
@@ -69,7 +70,7 @@ def products(request):
     cartItems = order.get_cart_items
   else:
     items = []
-    order = {'get_cart_total': 0, 'get_cart_items': 0}
+    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
     cartItems = order['get_cart_items']
 
   result = Product.objects.all()
@@ -106,7 +107,7 @@ def cart(request):
     cartItems = order.get_cart_items
   else:
     items = []
-    order = {'get_cart_total': 0, 'get_cart_items': 0}
+    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
     cartItems = order['get_cart_items']
 
   context = {
@@ -123,7 +124,7 @@ def checkout(request):
     cartItems = order.get_cart_items
   else:
     items = []
-    order = {'get_cart_total': 0, 'get_cart_items': 0}
+    order = {'get_cart_total': 0, 'get_cart_items':0, 'shipping': False}
     cartItems = order['get_cart_items']
 
   context = {
@@ -159,6 +160,32 @@ def updateItem(request):
     orderItem.delete()
 
   return JsonResponse('Item was added', safe=False)
+
+
+def processOrder(request):
+  
+  transaction_id = datetime.datetime.now().timestamp()
+  data = json.loads(request.body.decode('utf-8'))
+
+  if request.user.is_authenticated:
+    order, created = Order.objects.get_or_create(user=request.user, complete=False)
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == float(order.get_cart_total):
+      order.complete = True
+    order.save()
+
+    if order.shipping == True:
+      ShippingAddress.objects.create(
+        user=request.user,
+        order=order,
+        address=data['shipping']['address'],
+        city=data['shipping']['city'],
+        state=data['shipping']['state'],
+        zipcode=data['shipping']['zipcode'],
+      )
+  return JsonResponse('Payment completed', safe=False)
 
 
 
