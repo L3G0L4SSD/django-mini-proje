@@ -1,7 +1,7 @@
 {
   "builds": [
     {
-      "src": "ilkproje/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "maxLambdaSize": "15mb",
@@ -11,8 +11,12 @@
   ],
   "routes": [
     {
+      "src": "/static/(.*)",
+      "dest": "/staticfiles/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "ilkproje/wsgi.py"
+      "dest": "api/index.py"
     }
   ],
   "installCommand": "pip install -r requirements.txt"
