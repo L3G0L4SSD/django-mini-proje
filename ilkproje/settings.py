@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-sm&9hg)$7dwxpgnw8z&bd8@&i(l=i0l8=b@5)1=)rmh^2l1m%o
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['.vercel.app']
 
 
 # Application definition
@@ -79,12 +79,8 @@ WSGI_APPLICATION = 'ilkproje.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'postgres',
-        'USER': 'rootuser',
-        'PASSWORD': 'djangoproject',
-        'HOST': 'database-1.cfmwyayew9nf.eu-north-1.rds.amazonaws.com',
-        'PORT': '5432', 
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
