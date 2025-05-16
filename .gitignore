@@ -1,1 +1,18 @@
+# Python
+*.pyc
+__pycache__/
 
+# Virtual Environments
+venv/
+path/to/venv/
+
+# macOS
+*.DS_Store
+
+# IDEs
+.idea/
+
+# Django artifacts
+db.sqlite3
+staticfiles/
+.env
