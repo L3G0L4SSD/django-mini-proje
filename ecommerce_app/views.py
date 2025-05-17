@@ -3,9 +3,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
-from ecommerce_app.models import Product
+from ecommerce_app.models import *
 from ecommerce_app.forms import ProductForm
-
+from django.http import JsonResponse
+import json
+import datetime
 
 def index(request):
   
@@ -32,7 +34,7 @@ def signup(request):
 
     messages.success(request, "Your Account has been successfully created.")
 
-    return redirect('signin')
+    return redirect('ecommerce:signin')
 
   return render(request, 'ecommerce_app/signup.html')
 
@@ -61,9 +63,24 @@ def signout(request):
   return redirect('ecommerce:index')
 
 def products(request):
+
+  if request.user.is_authenticated:
+    order, created = Order.objects.get_or_create(user =request.user, complete=False)
+    items = order.items.all()
+    cartItems = order.get_cart_items
+  else:
+    items = []
+    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+    cartItems = order['get_cart_items']
+
   result = Product.objects.all()
 
-  return render(request, 'ecommerce_app/products.html', {'result' : result})
+  context = {
+    'result': result,
+    'cartItems': cartItems,
+  }
+
+  return render(request, 'ecommerce_app/products.html', context)
 
 def add_product(request):
 
@@ -81,6 +98,96 @@ def details(request, product_id):
   result = get_object_or_404(Product, id=product_id)
 
   return render(request, 'ecommerce_app/details.html', {'result' : result})
+
+def cart(request):
+
+  if request.user.is_authenticated:
+    order, created = Order.objects.get_or_create(user =request.user, complete=False)
+    items = order.items.all()
+    cartItems = order.get_cart_items
+  else:
+    items = []
+    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+    cartItems = order['get_cart_items']
+
+  context = {
+    'items': items,
+    'order': order,
+    'cartItems': cartItems,
+  }
+  return render(request, 'ecommerce_app/cart.html', context)
+
+def checkout(request):
+  if request.user.is_authenticated:
+    order, created = Order.objects.get_or_create(user =request.user, complete=False)
+    items = order.items.all()
+    cartItems = order.get_cart_items
+  else:
+    items = []
+    order = {'get_cart_total': 0, 'get_cart_items':0, 'shipping': False}
+    cartItems = order['get_cart_items']
+
+  context = {
+    'items': items,
+    'order': order,
+    'cartItems': cartItems,
+  }
+  return render(request, 'ecommerce_app/checkout.html', context)
+
+def updateItem(request):
+  
+  data = json.loads(request.body.decode('utf-8'))
+  productId = data['productId']
+  action = data['action']
+
+  print('Action:', action)
+  print('Product:', productId)
+
+ 
+  user = request.user
+  product = Product.objects.get(id=productId)
+
+  order, created = Order.objects.get_or_create(user=user, complete=False)
+  orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+
+  if action == 'add':
+    orderItem.quantity += 1
+  elif action == 'remove':
+    orderItem.quantity -= 1
+
+  orderItem.save()
+
+  if orderItem.quantity <= 0:
+    orderItem.delete()
+
+  return JsonResponse('Item was added', safe=False)
+
+
+def processOrder(request):
+  
+  transaction_id = datetime.datetime.now().timestamp()
+  data = json.loads(request.body.decode('utf-8'))
+
+  if request.user.is_authenticated:
+    order, created = Order.objects.get_or_create(user=request.user, complete=False)
+    total = float(data['form']['total'])
+    order.transaction_id = transaction_id
+
+    if total == float(order.get_cart_total):
+      order.complete = True
+    order.save()
+
+    if order.shipping == True:
+      ShippingAddress.objects.create(
+        user=request.user,
+        order=order,
+        address=data['shipping']['address'],
+        city=data['shipping']['city'],
+        state=data['shipping']['state'],
+        zipcode=data['shipping']['zipcode'],
+      )
+  return JsonResponse('Payment completed', safe=False)
+
 
 
 

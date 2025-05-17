@@ -47,9 +47,10 @@
           >
         </p>
         {% else %}
-        <p class="mb-3">Please sign up or log in to explore our products.</p>
+        <p class="mb-3w">Please sign up or log in to purchase our products. You can explore our products anonymously!</p>
         <a href="signup/" class="btn btn-success me-2">Sign Up</a>
         <a href="signin/" class="btn btn-primary">Sign In</a>
+        <a href="{% url 'ecommerce:products' %}" class="btn btn-success me-2">Store</a>
         {% endif %}
       </div>
     </div>
