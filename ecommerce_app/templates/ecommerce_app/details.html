@@ -1,6 +1,4 @@
-{% extends 'ecommerce_app/main.html'%}
-{% load static %}
-{% block content %}
+{% extends 'ecommerce_app/main.html'%} {% load static %} {% block content %}
 
 <!doctype html>
 <html lang="en">
@@ -19,6 +17,7 @@
     <div class="container my-5">
       <h2 class="text-center mb-4">Product Details</h2>
       <div class="card mx-auto shadow-sm" style="max-width: 600px">
+        
         {% if result.image %}
         <img
           src="{{ result.image.url }}"
@@ -41,8 +40,23 @@
           <p class="card-text">
             <strong>Description:</strong> {{ result.description }}
           </p>
+          <form id="add-to-cart-form">
+  <label for="quantity">Quantity:</label>
+  <input type="number"
+         id="quantity"
+         name="quantity"
+         value="1"
+         min="1"
+         max="{{ result.stock }}"
+         class="form-control"
+         style="width: 100px; display: inline-block;">
+  <button type="button"
+          class="btn btn-primary"
+          onclick="addToCart({{ result.id }})">
+    Add to Cart
+  </button>
+</form>
           <div class="text-center mt-4">
-            
             <a href="{% url 'ecommerce:products' %}" class="btn btn-primary"
               >Back to Products</a
             >
