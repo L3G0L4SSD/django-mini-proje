@@ -6,11 +6,11 @@ from . import views
 app_name = 'ecommerce'
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('signup/', views.signup, name='signup'),
-    path('signin/', views.signin, name='signin'),
+    path('home/', views.index, name='index'),
+    path('home/signup/', views.signup, name='signup'),
+    path('home/signin/', views.signin, name='signin'),
     path('signout', views.signout, name='signout'),
-    path('products/', views.products, name='products'),
+    path('', views.products, name='products'),
     path('add_product/', views.add_product, name='add_product'),
     path('details/<int:product_id>/', views.details, name='details'),
     path('cart/', views.cart, name='cart'),
