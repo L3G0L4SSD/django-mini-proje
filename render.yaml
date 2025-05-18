@@ -1,0 +1,22 @@
+databases:
+  - name: djangodatabase
+    plan: free
+    databaseName: djangodatabase_akns
+    user: rootuser
+
+services:
+  - type: web
+    plan: free
+    name: django-app
+    runtime: python
+    buildCommand: './build.sh'
+    startCommand: 'python -m gunicorn mysite.asgi:application -k uvicorn.workers.UvicornWorker' 
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: djangodatabase
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: WEB_CONCURRENCY
+        value: 4
