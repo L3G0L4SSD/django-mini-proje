@@ -63,24 +63,24 @@ def signout(request):
   return redirect('ecommerce:index')
 
 def products(request):
+    query = request.GET.get('q', '')
+    if query:
+        result = Product.objects.filter(name__icontains=query)
+    else:
+        result = Product.objects.all()
 
-  if request.user.is_authenticated:
-    order, created = Order.objects.get_or_create(user =request.user, complete=False)
-    items = order.items.all()
-    cartItems = order.get_cart_items
-  else:
-    items = []
-    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-    cartItems = order['get_cart_items']
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, complete=False)
+        cartItems = order.get_cart_items
+    else:
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+        cartItems = order['get_cart_items']
 
-  result = Product.objects.all()
-
-  context = {
-    'result': result,
-    'cartItems': cartItems,
-  }
-
-  return render(request, 'ecommerce_app/products.html', context)
+    context = {
+        'result': result,
+        'cartItems': cartItems,
+    }
+    return render(request, 'ecommerce_app/products.html', context)
 
 def add_product(request):
 
@@ -99,25 +99,72 @@ def details(request, product_id):
 
   return render(request, 'ecommerce_app/details.html', {'result' : result})
 
+# def cart(request):
+
+#   if request.user.is_authenticated:
+#     order, created = Order.objects.get_or_create(user =request.user, complete=False)
+#     items = order.items.all()
+#     cartItems = order.get_cart_items
+#   else:
+#     items = []
+#     order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+#     cartItems = order['get_cart_items']
+
+#   context = {
+#     'items': items,
+#     'order': order,
+#     'cartItems': cartItems,
+#   }
+#   return render(request, 'ecommerce_app/cart.html', context)
+
 def cart(request):
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, complete=False)
+        items = order.items.all()
+        cartItems = order.get_cart_items
+    else:
+        # Handle cookie cart
+        try:
+            cart = json.loads(request.COOKIES.get('cart', '{}'))
+        except:
+            cart = {}
 
-  if request.user.is_authenticated:
-    order, created = Order.objects.get_or_create(user =request.user, complete=False)
-    items = order.items.all()
-    cartItems = order.get_cart_items
-  else:
-    items = []
-    order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
-    cartItems = order['get_cart_items']
+        items = []
+        order = {'get_cart_total': 0, 'get_cart_items': 0, 'shipping': False}
+        cartItems = 0
 
-  context = {
-    'items': items,
-    'order': order,
-    'cartItems': cartItems,
-  }
-  return render(request, 'ecommerce_app/cart.html', context)
+        for product_id in cart:
+            try:
+                quantity = cart[product_id]['quantity']
+                product = Product.objects.get(id=product_id)
+                total = product.price * quantity
+
+                order['get_cart_total'] += total
+                order['get_cart_items'] += quantity
+
+                item = {
+                    'product': product,
+                    'quantity': quantity,
+                    'get_total': total,
+                }
+                items.append(item)
+                cartItems += quantity
+            except:
+                pass
+
+    context = {
+        'items': items,
+        'order': order,
+        'cartItems': cartItems,
+    }
+    return render(request, 'ecommerce_app/cart.html', context)
 
 def checkout(request):
+
+  if not request.user.is_authenticated:
+        messages.info(request, "You must login to proceed to checkout.")
+        return redirect('ecommerce:signin')
+  
   if request.user.is_authenticated:
     order, created = Order.objects.get_or_create(user =request.user, complete=False)
     items = order.items.all()
@@ -135,58 +182,67 @@ def checkout(request):
   return render(request, 'ecommerce_app/checkout.html', context)
 
 def updateItem(request):
-  
-  data = json.loads(request.body.decode('utf-8'))
-  productId = data['productId']
-  action = data['action']
+    data = json.loads(request.body.decode('utf-8'))
+    productId = data['productId']
+    action = data['action']
+    quantity = int(data.get('quantity', 1))  # Support quantity from frontend
 
-  print('Action:', action)
-  print('Product:', productId)
+    user = request.user
+    product = Product.objects.get(id=productId)
+    order, created = Order.objects.get_or_create(user=user, complete=False)
+    orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
- 
-  user = request.user
-  product = Product.objects.get(id=productId)
+    if action == 'add':
+        # Check if adding would exceed stock
+        if orderItem.quantity + quantity > product.stock:
+            return JsonResponse({'error': f'Only {product.stock} left in stock.'}, status=400)
+        orderItem.quantity += quantity
+    elif action == 'remove':
+        orderItem.quantity -= quantity
 
-  order, created = Order.objects.get_or_create(user=user, complete=False)
-  orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
+    orderItem.save()
 
-  if action == 'add':
-    orderItem.quantity += 1
-  elif action == 'remove':
-    orderItem.quantity -= 1
+    if orderItem.quantity <= 0:
+        orderItem.delete()
 
-  orderItem.save()
-
-  if orderItem.quantity <= 0:
-    orderItem.delete()
-
-  return JsonResponse('Item was added', safe=False)
+    return JsonResponse({'success': 'Item was added'})
 
 
 def processOrder(request):
-  
-  transaction_id = datetime.datetime.now().timestamp()
-  data = json.loads(request.body.decode('utf-8'))
+    transaction_id = datetime.datetime.now().timestamp()
+    data = json.loads(request.body.decode('utf-8'))
 
-  if request.user.is_authenticated:
-    order, created = Order.objects.get_or_create(user=request.user, complete=False)
-    total = float(data['form']['total'])
-    order.transaction_id = transaction_id
+    if request.user.is_authenticated:
+        order, created = Order.objects.get_or_create(user=request.user, complete=False)
+        total = float(data['form']['total'])
+        order.transaction_id = transaction_id
 
-    if total == float(order.get_cart_total):
-      order.complete = True
-    order.save()
+        if total == float(order.get_cart_total):
+            order.complete = True
+            order.save()
 
-    if order.shipping == True:
-      ShippingAddress.objects.create(
-        user=request.user,
-        order=order,
-        address=data['shipping']['address'],
-        city=data['shipping']['city'],
-        state=data['shipping']['state'],
-        zipcode=data['shipping']['zipcode'],
-      )
-  return JsonResponse('Payment completed', safe=False)
+            # Decrease stock for each product in the order
+            for item in order.items.all():
+                product = item.product
+                if product.stock >= item.quantity:
+                    product.stock -= item.quantity
+                    product.save()
+                else:
+                    # Handle out-of-stock scenario
+                    messages.error(request, f"Not enough stock for {product.name}.")
+                    return JsonResponse('Not enough stock', safe=False)
+                    pass
+
+            if order.shipping == True:
+                ShippingAddress.objects.create(
+                    user=request.user,
+                    order=order,
+                    address=data['shipping']['address'],
+                    city=data['shipping']['city'],
+                    state=data['shipping']['state'],
+                    zipcode=data['shipping']['zipcode'],
+                )
+    return JsonResponse('Payment completed', safe=False)
 
 
 

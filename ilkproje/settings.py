@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'ilkproje.wsgi.application'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='sqlite:///' + str(BASE_DIR / 'db.sqlite3'),  # fallback if no DATABASE_URL set
-        conn_max_age=600,  # keep connections alive
-        ssl_require=True
+        # Replace this value with your local database's connection string.
+        default='postgresql://rootuser:JHrRWGxq2ub4NfX64M15MWemWzNahkDt@dpg-d0jmo3nfte5s7380l03g-a.frankfurt-postgres.render.com/djangodatabase_akns',
+        conn_max_age=600
     )
 }
 
@@ -123,21 +123,26 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATIC_URL = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL='static/'
+# This setting informs Django of the URI path from which your static files will be served to users
+# Here, they will be accessible at your-domain.onrender.com/static/... or yourcustomdomain.com/static/...
+STATIC_URL = '/static/'
 STATICFILES_DIRS =[
     os.path.join(BASE_DIR,'static')
 ]
+# This production code might break development mode, so we check whether we're in DEBUG mode
+if not DEBUG:
+    # Tell Django to copy static assets into a path called `staticfiles` (this is specific to Render)
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-
-STATICFILES_STORAGE ="whitenoise.storage.CompressedManifestStaticFilesStorage"
+    # Enable the WhiteNoise storage backend, which compresses static files to reduce disk use
+    # and renames the files with unique names for each version to support long-term caching
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

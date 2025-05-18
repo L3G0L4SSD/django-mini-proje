@@ -1,7 +1,14 @@
 {% extends 'ecommerce_app/main.html' %} {% load static %} {% block content %}
+
+<form method="get" action="{% url 'ecommerce:products' %}" class="mb-4 d-flex">
+  <input type="text" name="q" class="form-control me-2" placeholder="Search products..." value="{{ request.GET.q }}">
+  <button type="submit" class="btn btn-outline-primary">Search</button>
+</form>
+
 <div class="row"> 
   {% for product in result%}
   <div class="col-lg-4">
+    
     <img class="thumbnail" src="{{ product.imageUrl }}" alt="" />
     <div class="box-element product">
       <h6><strong>{{ product.name }}</strong></h6>
@@ -14,3 +21,4 @@
   {% endfor %}
 </div>
 {% endblock content %}
+

@@ -21,7 +21,7 @@
           <div class="card shadow-sm">
             <div class="card-body">
               <h3 class="text-center mb-4">Sign Up</h3>
-              <form action="/signup/" method="post">
+              <form action="{% url 'ecommerce:signup' %}" method="post">
                 {% csrf_token %}
                 <div class="mb-3">
                   <label for="username" class="form-label">Username</label>
@@ -96,7 +96,7 @@
               <div class="text-center mt-3">
                 <p>
                   Already have an account?
-                  <a href="/signin" class="text-decoration-none">Sign In</a>
+                  <a href="{% url 'ecommerce:signin' %}" class="text-decoration-none">Sign In</a>
                 </p>
               </div>
             </div>
