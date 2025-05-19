@@ -1,4 +1,4 @@
-from ecommerce_app.models import Product
+from ecommerce_app.models import Product, Review
 from django.forms import ModelForm
 
 class ProductForm(ModelForm):
@@ -13,4 +13,7 @@ class ProductForm(ModelForm):
     return name
 
 
-  
+class ReviewForm(ModelForm):
+    class Meta:
+        model = Review
+        fields = ['rating', 'comment']

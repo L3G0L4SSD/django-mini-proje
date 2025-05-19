@@ -1,6 +1,4 @@
-{% extends 'ecommerce_app/main.html' %}
-{% load static %}
-{% block content %}
+{% extends 'ecommerce_app/main.html' %} {% load static %} {% block content %}
 
 <div class="container my-5">
   <h2 class="text-center mb-4">Product Details</h2>
@@ -24,7 +22,9 @@
       <h3 class="card-title text-center">{{ result.name }}</h3>
       <p class="card-text"><strong>Price:</strong> ${{ result.price }}</p>
       <p class="card-text"><strong>Stock:</strong> {{ result.stock }}</p>
-      <p class="card-text"><strong>Description:</strong> {{ result.description }}</p>
+      <p class="card-text">
+        <strong>Description:</strong> {{ result.description }}
+      </p>
       <form id="add-to-cart-form">
         <label for="quantity">Quantity:</label>
         <input
@@ -45,34 +45,57 @@
           Add to Cart
         </button>
       </form>
+      <h4>Reviews</h4>
+      {% for review in reviews %}
+      <div class="border p-2 mb-2">
+        <strong>{{ review.user.username }}</strong>
+        <span>Rating: {{ review.rating }}/5</span>
+        <p>{{ review.comment }}</p>
+        <small>{{ review.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+      </div>
+      {% empty %}
+      <p>No reviews yet.</p>
+      {% endfor %} {% if user.is_authenticated %}
+      <h5>Leave a Review</h5>
+      <form method="post">
+        {% csrf_token %} {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+      </form>
+      {% else %}
+      <p>
+        <a href="{% url 'ecommerce:signin' %}">Sign in</a> to leave a review.
+      </p>
+      {% endif %}
       <div class="text-center mt-4">
-        <a href="{% url 'ecommerce:products' %}" class="btn btn-primary">Back to Products</a>
+        <a href="{% url 'ecommerce:products' %}" class="btn btn-primary"
+          >Back to Products</a
+        >
       </div>
     </div>
   </div>
 </div>
 
 <script>
-function addToCart(productId) {
+  function addToCart(productId) {
     let quantity = document.getElementById('quantity').value;
-    var url = '/update_item/'
+    var url = '/update_item/';
     fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': csrftoken, // Use the one from your base template
-        },
-        body: JSON.stringify({
-            productId: productId,
-            action: 'add',
-            quantity: parseInt(quantity),
-        }),
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': csrftoken, // Use the one from your base template
+      },
+      body: JSON.stringify({
+        productId: productId,
+        action: 'add',
+        quantity: parseInt(quantity),
+      }),
     })
-    .then((response) => response.json())
-    .then((data) => {
+      .then((response) => response.json())
+      .then((data) => {
         location.reload();
-    });
-}
+      });
+  }
 </script>
 
 {% endblock %}

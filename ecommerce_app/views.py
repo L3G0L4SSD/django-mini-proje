@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from ecommerce_app.models import *
 from ecommerce_app.forms import ProductForm
 from django.http import JsonResponse
+from .forms import ReviewForm
 import json
 import datetime
 from django.contrib.auth.decorators import login_required
@@ -97,8 +98,28 @@ def add_product(request):
 
 def details(request, product_id):
   result = get_object_or_404(Product, id=product_id)
+  reviews = result.reviews.all().order_by('-created_at')
+  form = ReviewForm()
 
-  return render(request, 'ecommerce_app/details.html', {'result' : result})
+  if request.method == 'POST' and request.user.is_authenticated:
+      form = ReviewForm(request.POST)
+      if form.is_valid():
+          review = form.save(commit=False)
+          review.product = result
+          review.user = request.user
+          review.save()
+          messages.success(request, "Review submitted successfully!")
+          return redirect('ecommerce:details', product_id=product_id)
+  
+  context = {
+      'result': result,
+      'reviews': reviews,
+      'form': form,
+  }
+
+
+  return render(request, 'ecommerce_app/details.html', context)
+
 
 # def cart(request):
 
