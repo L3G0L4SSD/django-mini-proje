@@ -26,7 +26,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-default')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = ["ecommerce-store-n1pk.onrender.com"]
+ALLOWED_HOSTS = ["ecommerce-myshop-hxhf.onrender.com"]
 
 
 # Application definition
