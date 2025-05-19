@@ -24,7 +24,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'unsafe-default')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get('DEBUG', 'False') == 'True' 
+DEBUG = False
 
 ALLOWED_HOSTS = ["ecommerce-myshop-hxhf.onrender.com", "127.0.0.1", "localhost"]
 
@@ -156,4 +156,10 @@ if not DEBUG:
 
     AWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com'
     MEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'
+
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+    
    
