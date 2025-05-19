@@ -185,17 +185,13 @@ def updateItem(request):
     data = json.loads(request.body.decode('utf-8'))
     productId = data['productId']
     action = data['action']
-    quantity = int(data.get('quantity', 1))  # Support quantity from frontend
+    quantity = int(data.get('quantity', 1))  # <-- Make sure this line exists!
 
-    user = request.user
     product = Product.objects.get(id=productId)
-    order, created = Order.objects.get_or_create(user=user, complete=False)
+    order, created = Order.objects.get_or_create(user=request.user, complete=False)
     orderItem, created = OrderItem.objects.get_or_create(order=order, product=product)
 
     if action == 'add':
-        # Check if adding would exceed stock
-        if orderItem.quantity + quantity > product.stock:
-            return JsonResponse({'error': f'Only {product.stock} left in stock.'}, status=400)
         orderItem.quantity += quantity
     elif action == 'remove':
         orderItem.quantity -= quantity
