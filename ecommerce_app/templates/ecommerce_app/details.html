@@ -45,27 +45,33 @@
           Add to Cart
         </button>
       </form>
-      <h4>Reviews</h4>
-      {% for review in reviews %}
-      <div class="border p-2 mb-2">
-        <strong>{{ review.user.username }}</strong>
-        <span>Rating: {{ review.rating }}/5</span>
-        <p>{{ review.comment }}</p>
-        <small>{{ review.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+      <h4 class="mt-4 mb-3">Reviews</h4>
+{% if reviews %}
+  {% for review in reviews %}
+    <div class="card mb-3 shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <strong>{{ review.user.username }}</strong>
+            <span class="badge badge-warning ml-2">
+              {% for i in "12345"|slice:":review.rating"|make_list %}
+                <i class="fa fa-star text-warning"></i>
+              {% endfor %}
+              {% for i in "12345"|slice:"review.rating:"|make_list %}
+                <i class="fa fa-star text-secondary"></i>
+              {% endfor %}
+              {{ review.rating }}/5
+            </span>
+          </div>
+          <small class="text-muted">{{ review.created_at|date:"SHORT_DATETIME_FORMAT" }}</small>
+        </div>
+        <p class="mb-0">{{ review.comment }}</p>
       </div>
-      {% empty %}
-      <p>No reviews yet.</p>
-      {% endfor %} {% if user.is_authenticated %}
-      <h5>Leave a Review</h5>
-      <form method="post">
-        {% csrf_token %} {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Submit Review</button>
-      </form>
-      {% else %}
-      <p>
-        <a href="{% url 'ecommerce:signin' %}">Sign in</a> to leave a review.
-      </p>
-      {% endif %}
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="alert alert-info">No reviews yet.</div>
+{% endif %}
       <div class="text-center mt-4">
         <a href="{% url 'ecommerce:products' %}" class="btn btn-primary"
           >Back to Products</a
