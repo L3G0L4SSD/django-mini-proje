@@ -85,7 +85,7 @@
     <div class="box-element hidden" id="payment-info">
       <small>Paypal Options</small>
       <div id="paypal-button-container"></div>
-      {% comment %} <button id="make-payment">Make Payment</button> {% endcomment %}
+      <button id="make-payment">Make Payment</button>
     </div>
   </div>
 
@@ -208,10 +208,10 @@
 
   })
 
-  /*document.getElementById('make-payment').addEventListener('click', function (event) {
+  document.getElementById('make-payment').addEventListener('click', function (event) {
 
     submitFormData()
-  })*/
+  })
 
   function submitFormData(){
     console.log('Payment button clicked')

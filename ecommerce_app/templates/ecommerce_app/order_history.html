@@ -1,0 +1,46 @@
+{% extends 'ecommerce_app/main.html' %}
+{% block content %}
+<div class="container my-5">
+    <h2 class="mb-4 text-center">Order History</h2>
+    {% if orders %}
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                {% for order in orders %}
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <strong>Order #{{ order.id }}</strong>
+                            <span class="float-right">{{ order.date_ordered|date:"SHORT_DATETIME_FORMAT" }}</span>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title">Items:</h6>
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Quantity</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in order.items.all %}
+                                        <tr>
+                                            <td>{{ item.product.name }}</td>
+                                            <td>x{{ item.quantity }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <div class="text-right">
+                                <strong>Total:</strong> ${{ order.get_cart_total|floatformat:2 }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    {% else %}
+        <div class="alert alert-info text-center">
+            You have no past orders.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
