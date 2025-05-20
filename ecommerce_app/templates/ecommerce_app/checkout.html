@@ -1,4 +1,5 @@
 {% extends 'ecommerce_app/main.html'%} {% load static %} {% block content %}
+<script src="https://js.stripe.com/v3/"></script>
 
 <div class="row">
   <div class="col-lg-6">
@@ -83,10 +84,19 @@
     <br />
 
     <div class="box-element hidden" id="payment-info">
-      <small>Paypal Options</small>
-      <div id="paypal-button-container"></div>
-      <button id="make-payment">Make Payment</button>
-    </div>
+    <small>Paypal Options</small>
+    <div id="paypal-button-container"></div>
+    <br><br>
+
+    <!-- Stripe Button -->
+    <button id="stripe-button" style="background-color: black; color: white; width: 100%; padding: 10px; border: none; cursor: pointer;">
+        PAY WITH STRIPE
+    </button>
+
+    <br><br>
+    <button id="make-payment">Make Payment</button>
+</div>
+
   </div>
 
   <div class="col-lg-6">
@@ -257,6 +267,34 @@
       window.location.href = "{% url 'ecommerce:products' %}"
     })
   }
+  // Stripe payment integration
+  // Make sure to replace with your own publishable API key from Stripe
+  var stripe = Stripe("{{ STRIPE_PUBLIC_KEY }}");
+
+  document.getElementById("stripe-button").addEventListener("click", function () {
+      fetch("/create-checkout-session/", {
+          method: "POST",
+          headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              "X-CSRFToken": "{{ csrf_token }}"
+          },
+          body: "amount={{ order.get_cart_total|floatformat:2 }}"
+      })
+      .then(function (response) {
+          return response.json();
+      })
+      .then(function (session) {
+          return stripe.redirectToCheckout({ sessionId: session.id });
+      })
+      .then(function (result) {
+          if (result.error) {
+              alert(result.error.message);
+          }
+      });
+  });
+
+
+
 </script>
 
 {% endblock content %}

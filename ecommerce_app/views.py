@@ -8,7 +8,10 @@ from ecommerce_app.forms import ProductForm
 from django.http import JsonResponse
 from .forms import ReviewForm
 import json
+import stripe 
 import datetime
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 
 def index(request):
@@ -200,6 +203,7 @@ def checkout(request):
     'items': items,
     'order': order,
     'cartItems': cartItems,
+    'STRIPE_PUBLIC_KEY': settings.STRIPE_PUBLIC_KEY, #BUNU STRIPE'DEN ALDIK
   }
   return render(request, 'ecommerce_app/checkout.html', context)
 
@@ -270,8 +274,32 @@ def order_history(request):
     orders = Order.objects.filter(user=request.user, complete=True).order_by('-date_ordered')
     return render(request, 'ecommerce_app/order_history.html', {'orders': orders})
 
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
-
+@csrf_exempt
+def create_checkout_session(request):
+    if request.method == "POST":
+        try:
+            amount = float(request.POST.get("amount", "0"))
+            session = stripe.checkout.Session.create(
+                payment_method_types=['card'],
+                line_items=[{
+                    'price_data': {
+                        'currency': 'usd',
+                        'product_data': {
+                            'name': 'Cart Total',
+                        },
+                        'unit_amount': int(amount * 100),  # Stripe amount in cents
+                    },
+                    'quantity': 1,
+                }],
+                mode='payment',
+                success_url='http://127.0.0.1:8000/success/',
+                cancel_url='http://127.0.0.1:8000/cancel/',
+            )
+            return JsonResponse({'id': session.id})
+        except Exception as e:
+            return JsonResponse({'error': str(e)})
 
 
 # Create your views here

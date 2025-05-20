@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.urls import include, path
-
+from ecommerce_app.views import create_checkout_session
 from . import views
+from .views import create_checkout_session
 
 app_name = 'ecommerce'
 
@@ -18,4 +19,6 @@ urlpatterns = [
     path('update_item/', views.updateItem, name='update_item'),
     path('process_order/', views.processOrder, name='process_order'),
     path('order-history/', views.order_history, name='order_history'),
+    path('create-checkout-session/', create_checkout_session, name='create-checkout-session'),
+
 ]
