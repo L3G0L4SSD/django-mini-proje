@@ -270,8 +270,16 @@ def order_history(request):
     orders = Order.objects.filter(user=request.user, complete=True).order_by('-date_ordered')
     return render(request, 'ecommerce_app/order_history.html', {'orders': orders})
 
+@login_required
+def add_to_wishlist(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    Wishlist.objects.get_or_create(user=request.user, product=product)
+    return redirect('ecommerce:details', product_id=product_id)
 
-
+@login_required
+def wishlist(request):
+    wishlist_items = Wishlist.objects.filter(user=request.user).select_related('product')
+    return render(request, 'ecommerce_app/wishlist.html', {'wishlist_items': wishlist_items})
 
 
 # Create your views here

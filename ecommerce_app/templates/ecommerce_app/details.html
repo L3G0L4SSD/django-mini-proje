@@ -81,6 +81,11 @@
     <a href="{% url 'ecommerce:signin' %}">Sign in</a> to leave a review.
   </div>
 {% endif %}
+{% if user.is_authenticated %}
+  <a href="{% url 'ecommerce:add_to_wishlist' result.id %}" class="btn btn-outline-danger mb-3">
+    Add to Wishlist
+  </a>
+{% endif %}
       <div class="text-center mt-4">
         <a href="{% url 'ecommerce:products' %}" class="btn btn-primary">Back to Products</a>
       </div>

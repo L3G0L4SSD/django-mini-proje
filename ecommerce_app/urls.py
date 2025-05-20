@@ -18,4 +18,6 @@ urlpatterns = [
     path('update_item/', views.updateItem, name='update_item'),
     path('process_order/', views.processOrder, name='process_order'),
     path('order-history/', views.order_history, name='order_history'),
+    path('wishlist/', views.wishlist, name='wishlist'),
+    path('wishlist/add/<int:product_id>/', views.add_to_wishlist, name='add_to_wishlist'),
 ]
