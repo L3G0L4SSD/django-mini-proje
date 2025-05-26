@@ -1,0 +1,13 @@
+{% extends "admin/change_list.html" %}
+{% block object-tools %}
+    <div class="object-tools">
+        <ul class="nav navbar-nav">
+            <li>
+                <a href="{% url 'admin:sales-report' %}" class="btn btn-info" style="margin-right:10px;">
+                    📊 Sales Report
+                </a>
+            </li>
+        </ul>
+    </div>
+    {{ block.super }}
+{% endblock %}
